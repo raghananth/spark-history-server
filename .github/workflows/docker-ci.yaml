@@ -33,7 +33,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-to-assume: arn:aws:iam::736405094009:role/data-on-eks-oidc-role
         aws-region: us-east-1
 
     # 4. Login in to an Amazon ECR Public registry.
