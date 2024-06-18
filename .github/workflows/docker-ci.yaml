@@ -13,6 +13,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Need this to authenticate using openid
     permissions:
       id-token: write # This is required for requesting the JWT
 
@@ -33,8 +34,8 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::736405094009:role/data-on-eks-oidc-role
-        aws-region: us-east-1
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     # 4. Login in to an Amazon ECR Public registry.
     # https://github.com/aws-actions/amazon-ecr-login
