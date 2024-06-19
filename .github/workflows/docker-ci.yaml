@@ -112,7 +112,7 @@ jobs:
     # https://github.com/marketplace/actions/docker-manifest-action
     # https://github.com/Noelware/docker-manifest-action
     - name: Build and push docker manifest
-      uses: Noelware/docker-manifest-action@v5
+      uses: Noelware/docker-manifest-action@master
       with:
         inputs: ${{ steps.meta.outputs.tags }}
         images: ${{ steps.meta.outputs.tags }}-x86,${{ steps.meta.outputs.tags }}-arm64
