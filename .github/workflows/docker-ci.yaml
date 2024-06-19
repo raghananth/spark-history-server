@@ -73,3 +73,47 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}-${{ matrix.arch }}
         labels: ${{ steps.meta.outputs.labels }}
+
+  manifest:
+    needs: build
+    # runs-on: ubuntu-latest
+    runs-on: codebuild-spark-history-server-build-arm64-${{ github.run_id }}-${{ github.run_attempt }}
+    # Need this to authenticate using openid
+    permissions:
+      id-token: write # This is required for requesting the JWT
+
+    steps:
+    # 1. Configure AWS Credentials
+    # https://github.com/aws-actions/configure-aws-credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # 2. Login in to an Amazon ECR Public registry.
+    # https://github.com/aws-actions/amazon-ecr-login
+    - name: Login to Amazon ECR Public
+      id: login-ecr-public
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registry-type: public
+
+    # 3. Extract metadata from Git reference and GitHub events
+    # https://github.com/docker/metadata-action
+    - name: Docker meta extract
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+    # 4. Build and push manifest to registry
+    # https://github.com/docker/build-push-action
+    # https://github.com/marketplace/actions/docker-manifest-action
+    # https://github.com/Noelware/docker-manifest-action
+    - name: Build and push docker manifest
+      uses: Noelware/docker-manifest-action@v5
+      with:
+        inputs: ${{ steps.meta.outputs.tags }}
+        images: ${{ steps.meta.outputs.tags }}-x86,${{ steps.meta.outputs.tags }}-arm64
+        push: ${{ github.event_name != 'pull_request' }}
