@@ -13,7 +13,7 @@ env:
 jobs:
   build:
     # runs-on: ubuntu-latest
-    runs-on: codebuild-spark-history-server-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-spark-history-server-build-${{ github.run_id }}-${{ github.run_attempt }}
     # Need this to authenticate using openid
     permissions:
       id-token: write # This is required for requesting the JWT
